@@ -1,2 +1,2 @@
-alter table topico
+alter table resposta
     add autor bigint not null;

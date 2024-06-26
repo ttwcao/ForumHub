@@ -1,6 +1,8 @@
 package br.com.api.forumhub.domain.topico;
 
 import br.com.api.forumhub.domain.curso.Curso;
+import br.com.api.forumhub.domain.resposta.Resposta;
+import br.com.api.forumhub.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name="topico")
 @Entity(name="Topico")
@@ -34,11 +37,19 @@ public class Topico {
     @JoinColumn(name = "curso")
     private Curso curso;
 
-    public Topico(DadosCadastroTopico dados, Curso curso) {
+    @OneToMany(mappedBy = "topico", cascade = CascadeType.ALL)
+    private List<Resposta> resposta;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "autor")
+    private Usuario usuario;
+
+    public Topico(DadosCadastroTopico dados, Curso curso, Usuario usuario) {
         this.titulo = dados.titulo();;
         this.mensagem = dados.mensagem();
         this.data = LocalDateTime.now();
         this.status = dados.status();
         this.curso = curso;
+        this.usuario = usuario;
     }
 }

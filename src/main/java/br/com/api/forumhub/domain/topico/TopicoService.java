@@ -1,4 +1,6 @@
 package br.com.api.forumhub.domain.topico;
+import br.com.api.forumhub.domain.usuario.Usuario;
+import br.com.api.forumhub.domain.usuario.UsuarioRepository;
 import org.slf4j.Logger;
 import br.com.api.forumhub.domain.curso.Curso;
 import br.com.api.forumhub.domain.curso.CursoRepository;
@@ -18,13 +20,20 @@ public class TopicoService {
     @Autowired
     private CursoRepository cursoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @Transactional
     public Topico cadastraTopico(DadosCadastroTopico dadosCadastroTopico){
         Long cursoID = dadosCadastroTopico.cursoId();
         logger.info("Curso ID Recebido: {}", cursoID);
-        Curso curso = cursoRepository.findById(cursoID).orElseThrow(() -> new IllegalArgumentException("Curso não localizado"));
-        Topico topico = new Topico(dadosCadastroTopico, curso);
-        logger.info("Curso Encontrado {}", curso.getNome());
+        Curso curso = cursoRepository.findById(cursoID)
+                .orElseThrow(() -> new IllegalArgumentException("Curso não localizado"));
+
+        Usuario usuario = usuarioRepository.findById(dadosCadastroTopico.usuarioId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não localizado"));
+
+        Topico topico = new Topico(dadosCadastroTopico, curso, usuario);
         return topicoRepository.save(topico);
     }
 }

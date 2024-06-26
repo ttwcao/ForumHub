@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 
-@RequestMapping("topico")
+@RequestMapping("/topico")
 public class TopicoController {
 
     @Autowired
@@ -22,9 +22,12 @@ public class TopicoController {
 
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosCadastroTopico dadosCadastroTopico, UriComponentsBuilder uriBuilder){
-            Topico topico = topicoService.cadastraTopico(dadosCadastroTopico);
-            var uri = uriBuilder.path("topico/{id}").buildAndExpand(topico.getId()).toUri();
-            return ResponseEntity.created(uri).body(new DadosDetalheamentoTopico(topico));
+
+        //validação do token antes
+
+        Topico topico = topicoService.cadastraTopico(dadosCadastroTopico);
+        var uri = uriBuilder.path("topico/{id}").buildAndExpand(topico.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DadosDetalheamentoTopico(topico));
     }
 
 }

@@ -1,3 +1,2 @@
 alter table topico
-    add curso bigint not null,
-    add resposta bigint;
+    add autor bigint not null;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("curso")
+@RequestMapping("/curso")
 public class CursoController {
 
     @Autowired

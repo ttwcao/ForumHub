@@ -16,6 +16,9 @@ public record DadosCadastroTopico(
         Status status,
 
         @NotNull
-        Long cursoId
+        Long cursoId,
+
+        @NotNull
+        Long usuarioId
 )
 {}
