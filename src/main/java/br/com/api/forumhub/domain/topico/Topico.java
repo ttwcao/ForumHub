@@ -48,8 +48,20 @@ public class Topico {
         this.titulo = dados.titulo();;
         this.mensagem = dados.mensagem();
         this.data = LocalDateTime.now();
-        this.status = dados.status();
+        this.status = Status.ABERTO;
         this.curso = curso;
         this.usuario = usuario;
+    }
+
+    public void atualizarInformacoes(DadosEditarTopico dados) {
+        if(dados.titulo() != null){
+            this.titulo = dados.titulo();
+        }
+        if(dados.mensagem() != null){
+            this.mensagem = dados.mensagem();
+        }
+        if(dados.cursoId() != null){
+            this.curso = curso;
+        }
     }
 }
