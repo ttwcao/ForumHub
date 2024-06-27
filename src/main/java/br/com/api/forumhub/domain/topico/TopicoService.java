@@ -1,20 +1,20 @@
 package br.com.api.forumhub.domain.topico;
 import br.com.api.forumhub.domain.usuario.Usuario;
 import br.com.api.forumhub.domain.usuario.UsuarioRepository;
-import org.slf4j.Logger;
+import jakarta.persistence.EntityNotFoundException;
 import br.com.api.forumhub.domain.curso.Curso;
 import br.com.api.forumhub.domain.curso.CursoRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicoService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TopicoService.class);
 
     @Autowired
     private TopicoRepository topicoRepository;
@@ -25,18 +25,79 @@ public class TopicoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    //metodo para pegar o ID do usuário
+    private Long GetUsuarioID(){
+        //obter email do usuario logado
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        var email = auth.getName();
+
+        //buscar o ID do usuário
+        Long usuario = usuarioRepository.findIdByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não localizado!"));
+        return usuario;
+    }
+
     @Transactional
     public Topico cadastraTopico(DadosCadastroTopico dadosCadastroTopico){
-        Long cursoID = dadosCadastroTopico.cursoId();
-        logger.info("Curso ID Recebido: {}", cursoID);
-        Curso curso = cursoRepository.findById(cursoID)
-                .orElseThrow(() -> new IllegalArgumentException("Curso não localizado"));
 
-        Usuario usuario = usuarioRepository.findById(dadosCadastroTopico.usuarioId())
+        //verificar o curso informado
+        Long cursoID = dadosCadastroTopico.cursoId();
+        Curso curso = cursoRepository.findById(cursoID)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não localizado"));
+
+        //obter id do usuário
+        var usuarioId = GetUsuarioID();
+        Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não localizado"));
 
+        //validar se já existe tópico com mesmo nome
+        if(topicoRepository.findByTitulo(dadosCadastroTopico.titulo()).isPresent()){
+                throw new RuntimeException("Já existe um tópico com este nome!");
+        }
+
+        //executar cadastro
         Topico topico = new Topico(dadosCadastroTopico, curso, usuario);
         return topicoRepository.save(topico);
     }
+
+    @Transactional
+    public List<DadosListagemTopico> listaFiltro(Long cursoId, int ano){
+        List<Topico> topicos = topicoRepository.findByCursoNomeAno(cursoId, ano);
+        if(topicos.isEmpty()){
+            return Collections.emptyList();
+        }else {
+            return topicos.stream()
+                    .map(DadosListagemTopico::new)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Transactional
+    public DadosDetalheamentoTopico editarTopico(Long topicoId, DadosEditarTopico dadosEditarTopico){
+
+        //obter id do usuário
+        var usuarioId = GetUsuarioID();
+
+        //obter o tópico
+        var topico = topicoRepository.findById(topicoId)
+                .orElseThrow(() -> new EntityNotFoundException("Tópico não localizado!"));
+
+        if(dadosEditarTopico.cursoId() != null){
+            var curso = cursoRepository.findById(dadosEditarTopico.cursoId());
+            if(curso.isEmpty()){
+                throw new EntityNotFoundException("Curso não localizado");
+            }
+        }
+
+        if(!topico.getUsuario().getId().equals(usuarioId)){
+            throw new SecurityException("Você não tem permissão para editar este tópico!");
+        } else {
+            topico.atualizarInformacoes(dadosEditarTopico);
+            return new DadosDetalheamentoTopico(topico);
+        }
+
+    }
+
+
 
 }

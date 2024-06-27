@@ -5,9 +5,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TopicoRepository extends JpaRepository<Topico, Long> {
 
     @Query("SELECT t FROM Topico t WHERE t.curso.id = :cursoId AND YEAR(t.data) = :ano")
     List<Topico> findByCursoNomeAno(@Param("cursoId") Long cursoId, @Param("ano") int ano);
+
+    Optional<Topico> findByTitulo(String titulo);
 }

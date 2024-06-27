@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 
@@ -40,16 +39,15 @@ public class TopicoController {
         return ResponseEntity.ok(page);
     }
 
+    //filtro para consulta
     @PostMapping("/filtro")
     public ResponseEntity<List<DadosListagemTopico>> listaFiltro(@RequestBody @Valid DadosFiltroTopico dados){
-        List<Topico> topicos = topicoRepository.findByCursoNomeAno(dados.cursoId(), dados.ano());
-        if (topicos.isEmpty()){
+        List<DadosListagemTopico> dadosListagemTopicos = topicoService.listaFiltro(dados.cursoId(), dados.ano());
+        if(dadosListagemTopicos.isEmpty()) {
             return ResponseEntity.noContent().build();
+        } else{
+            return ResponseEntity.ok(dadosListagemTopicos);
         }
-        List<DadosListagemTopico> dadosListagemTopicos = topicos.stream()
-                .map(DadosListagemTopico::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dadosListagemTopicos);
     }
 
     @GetMapping("/{id}")
@@ -64,12 +62,20 @@ public class TopicoController {
         }
     }
 
-    @PutMapping("{id}")
-    @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosEditarTopico dados){
-        var topico = topicoRepository.getReferenceById(dados.id());
-        topico.atualizarInformacoes(dados);
-        return ResponseEntity.ok(new DadosDetalheamentoTopico(topico));
+    @PutMapping("/{id}")
+    public ResponseEntity<DadosDetalheamentoTopico> editarTopico(@PathVariable Long id, @RequestBody @Valid DadosEditarTopico dados){
+        DadosDetalheamentoTopico dadosAtualizados = topicoService.editarTopico(id, dados);
+        return ResponseEntity.ok(dadosAtualizados);
     }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity excluir(@PathVariable Long id){
+        var topico = topicoRepository.getReferenceById(id);
+        topico.desabilitar();
+        return ResponseEntity.noContent().build();
+
+    }
+
 
 }

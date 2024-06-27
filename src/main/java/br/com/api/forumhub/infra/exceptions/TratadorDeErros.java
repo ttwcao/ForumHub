@@ -27,4 +27,10 @@ public class TratadorDeErros {
         }
     }
 
+    public class TopicoJaExisteException extends RuntimeException {
+        public TopicoJaExisteException(String message) {
+            super(message);
+        }
+    }
+
 }

@@ -64,4 +64,8 @@ public class Topico {
             this.curso = curso;
         }
     }
+
+    public void desabilitar() {
+        this.status = Status.FECHADO;
+    }
 }
