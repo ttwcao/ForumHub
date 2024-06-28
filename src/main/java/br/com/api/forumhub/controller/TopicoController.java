@@ -3,6 +3,7 @@ package br.com.api.forumhub.controller;
 import br.com.api.forumhub.domain.topico.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.hibernate.dialect.unique.CreateTableUniqueDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

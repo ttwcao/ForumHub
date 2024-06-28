@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import br.com.api.forumhub.infra.security.ConsultarIdToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,17 +26,9 @@ public class TopicoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    //metodo para pegar o ID do usuário
-    private Long GetUsuarioID(){
-        //obter email do usuario logado
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        var email = auth.getName();
+    @Autowired
+    private ConsultarIdToken consultarIdToken;
 
-        //buscar o ID do usuário
-        Long usuario = usuarioRepository.findIdByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não localizado!"));
-        return usuario;
-    }
 
     @Transactional
     public Topico cadastraTopico(DadosCadastroTopico dadosCadastroTopico){
@@ -46,7 +39,8 @@ public class TopicoService {
                 .orElseThrow(() -> new EntityNotFoundException("Curso não localizado"));
 
         //obter id do usuário
-        var usuarioId = GetUsuarioID();
+        Long usuarioId = consultarIdToken.getIdUsuarioLogado();
+
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não localizado"));
 
@@ -76,7 +70,8 @@ public class TopicoService {
     public DadosDetalheamentoTopico editarTopico(Long topicoId, DadosEditarTopico dadosEditarTopico){
 
         //obter id do usuário
-        var usuarioId = GetUsuarioID();
+        Long usuarioId = consultarIdToken.getIdUsuarioLogado();
+
 
         //obter o tópico
         var topico = topicoRepository.findById(topicoId)
