@@ -6,7 +6,6 @@ import br.com.api.forumhub.domain.curso.Curso;
 import br.com.api.forumhub.domain.curso.CursoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import br.com.api.forumhub.infra.security.ConsultarIdToken;
 
@@ -91,6 +90,13 @@ public class TopicoService {
             return new DadosDetalheamentoTopico(topico);
         }
 
+    }
+
+    @Transactional
+    public DadosDetalhamentoTopicoComRespostas obterTopicoComRespostas(Long id){
+        var topico = topicoRepository.findByIdWithRespostas(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tópico não localizado!"));
+        return new DadosDetalhamentoTopicoComRespostas(topico);
     }
 
 

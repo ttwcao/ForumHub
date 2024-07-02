@@ -1,9 +1,9 @@
 package br.com.api.forumhub.controller;
 
+import br.com.api.forumhub.domain.resposta.RespostaRepository;
 import br.com.api.forumhub.domain.topico.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.hibernate.dialect.unique.CreateTableUniqueDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,9 @@ public class TopicoController {
     @Autowired
     private  TopicoRepository topicoRepository;
 
+    @Autowired
+    private RespostaRepository respostaRepository;
+
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosCadastroTopico dadosCadastroTopico, UriComponentsBuilder uriBuilder){
 
@@ -38,6 +41,12 @@ public class TopicoController {
     public ResponseEntity<Page<DadosListagemTopico>> listar(@PageableDefault(size = 5) Pageable paginacao){
         var page = topicoRepository.findAll(paginacao).map(DadosListagemTopico::new);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}/detalhes")
+    public ResponseEntity<DadosDetalhamentoTopicoComRespostas> obterTopicoComRespostas(@PathVariable Long id){
+        var detalhesTopico = topicoService.obterTopicoComRespostas(id);
+        return ResponseEntity.ok(detalhesTopico);
     }
 
     //filtro para consulta

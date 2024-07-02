@@ -42,4 +42,10 @@ public class Resposta {
         this.topico = topico;
         this.usuario = usuario;
     }
+
+    public void atualizarInformacoes(DadosEditarResposta dados) {
+        if(dados.mensagem() != null){
+            this.mensagem = dados.mensagem();
+        }
+    }
 }

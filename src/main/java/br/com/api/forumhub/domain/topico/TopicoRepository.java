@@ -14,4 +14,7 @@ public interface TopicoRepository extends JpaRepository<Topico, Long> {
     List<Topico> findByCursoNomeAno(@Param("cursoId") Long cursoId, @Param("ano") int ano);
 
     Optional<Topico> findByTitulo(String titulo);
+
+    @Query("Select t FROM Topico t LEFT JOIN FETCH t.resposta where t.id = :id")
+    Optional<Topico> findByIdWithRespostas(@Param("id") Long id);
 }
