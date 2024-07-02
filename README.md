@@ -29,3 +29,7 @@ A API possui rotas mapeadas para tópicos, respostas, usuários e curso, permiti
 - JSON
 
 ![Diagrama_do banco_de_dados](https://github.com/ttwcao/ForumHub/assets/108889440/c74beb2d-5028-41b9-894e-3124a100a39e)
+
+![Badge](https://github.com/ttwcao/ForumHub/assets/108889440/bea1523d-cc6e-433c-a069-abdf72c88564)
+
+
