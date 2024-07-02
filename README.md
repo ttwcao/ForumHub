@@ -6,7 +6,7 @@
 
 #### Em produção
  
-A API possui rotas mapeadas para tópicos, respostas, usuários e curso e permitite aos usuários:
+A API possui rotas mapeadas para tópicos, respostas, usuários e curso, permitite aos usuários:
 
 - Criar um novo tópico;
 - Mostrar todos os tópicos criados;
